@@ -89,7 +89,8 @@ public class UserDAO {
                 DatabaseHelper.COL_FULL_NAME,
                 DatabaseHelper.COL_ROLE,
                 DatabaseHelper.COL_EMAIL,
-                DatabaseHelper.COL_PHONE
+                DatabaseHelper.COL_PHONE,
+                DatabaseHelper.COL_CREATED_DATE
         };
         String selection = DatabaseHelper.COL_USER_ID + " = ?";
         String[] selectionArgs = {String.valueOf(userId)};
@@ -104,10 +105,118 @@ public class UserDAO {
             user.setRole(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_ROLE)));
             user.setEmail(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_EMAIL)));
             user.setPhone(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_PHONE)));
+            user.setCreatedDate(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_CREATED_DATE)));
             cursor.close();
         }
         close();
         return user;
     }
+
+    // Thêm nhân viên
+    public long insertUser(User user) {
+        open();
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.COL_USERNAME, user.getUsername());
+        values.put(DatabaseHelper.COL_PASSWORD, user.getPassword());
+        values.put(DatabaseHelper.COL_FULL_NAME, user.getFullName());
+        values.put(DatabaseHelper.COL_ROLE, user.getRole());
+        values.put(DatabaseHelper.COL_EMAIL, user.getEmail());
+        values.put(DatabaseHelper.COL_PHONE, user.getPhone());
+
+        long result = db.insert(DatabaseHelper.TABLE_USERS, null, values);
+        close();
+        return result;
+    }
+
+    // Cập nhật nhân viên
+    public int updateUser(User user) {
+        open();
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.COL_USERNAME, user.getUsername());
+        values.put(DatabaseHelper.COL_FULL_NAME, user.getFullName());
+        values.put(DatabaseHelper.COL_ROLE, user.getRole());
+        values.put(DatabaseHelper.COL_EMAIL, user.getEmail());
+        values.put(DatabaseHelper.COL_PHONE, user.getPhone());
+        
+        // Chỉ cập nhật mật khẩu nếu có
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            values.put(DatabaseHelper.COL_PASSWORD, user.getPassword());
+        }
+
+        int result = db.update(DatabaseHelper.TABLE_USERS, values,
+                DatabaseHelper.COL_USER_ID + " = ?",
+                new String[]{String.valueOf(user.getUserId())});
+        close();
+        return result;
+    }
+
+    // Xóa nhân viên
+    public int deleteUser(int userId) {
+        open();
+        int result = db.delete(DatabaseHelper.TABLE_USERS,
+                DatabaseHelper.COL_USER_ID + " = ?",
+                new String[]{String.valueOf(userId)});
+        close();
+        return result;
+    }
+
+    // Lấy tất cả nhân viên
+    public java.util.List<User> getAllUsers() {
+        open();
+        java.util.List<User> users = new java.util.ArrayList<>();
+        String[] columns = {
+                DatabaseHelper.COL_USER_ID,
+                DatabaseHelper.COL_USERNAME,
+                DatabaseHelper.COL_FULL_NAME,
+                DatabaseHelper.COL_ROLE,
+                DatabaseHelper.COL_EMAIL,
+                DatabaseHelper.COL_PHONE,
+                DatabaseHelper.COL_CREATED_DATE
+        };
+
+        Cursor cursor = db.query(DatabaseHelper.TABLE_USERS, columns, null, null, null, null,
+                DatabaseHelper.COL_FULL_NAME);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                User user = new User();
+                user.setUserId(cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_USER_ID)));
+                user.setUsername(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_USERNAME)));
+                user.setFullName(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_FULL_NAME)));
+                user.setRole(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_ROLE)));
+                user.setEmail(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_EMAIL)));
+                user.setPhone(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_PHONE)));
+                user.setCreatedDate(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_CREATED_DATE)));
+                users.add(user);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        close();
+        return users;
+    }
+
+    // Kiểm tra username đã tồn tại chưa
+    public boolean isUsernameExists(String username, int excludeUserId) {
+        open();
+        String[] columns = {DatabaseHelper.COL_USER_ID};
+        String selection = DatabaseHelper.COL_USERNAME + " = ?";
+        String[] selectionArgs = {username};
+        
+        Cursor cursor = db.query(DatabaseHelper.TABLE_USERS, columns, selection, selectionArgs, null, null, null);
+        
+        boolean exists = false;
+        if (cursor != null && cursor.moveToFirst()) {
+            int foundUserId = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_USER_ID));
+            // Nếu tìm thấy user khác (không phải user đang chỉnh sửa)
+            if (foundUserId != excludeUserId) {
+                exists = true;
+            }
+            cursor.close();
+        }
+        close();
+        return exists;
+    }
 }
+
+
 

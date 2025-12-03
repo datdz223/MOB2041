@@ -80,21 +80,24 @@ public class MainMenuActivity extends AppCompatActivity {
         findViewById(R.id.cardManageCategories).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainMenuActivity.this, "Chức năng đang phát triển", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainMenuActivity.this, ManageCategoriesActivity.class);
+                startActivity(intent);
             }
         });
 
         findViewById(R.id.cardManageEmployees).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainMenuActivity.this, "Chức năng đang phát triển", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainMenuActivity.this, ManageEmployeesActivity.class);
+                startActivity(intent);
             }
         });
 
         findViewById(R.id.cardViewReports).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainMenuActivity.this, "Chức năng đang phát triển", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainMenuActivity.this, ViewReportsActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -150,4 +153,6 @@ public class MainMenuActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 }
+
+
 

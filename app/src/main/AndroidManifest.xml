@@ -47,6 +47,21 @@
         <activity
             android:name=".CreateOrderActivity"
             android:exported="false" />
+        <activity
+            android:name=".ManageCategoriesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddEditCategoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ManageEmployeesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddEditEmployeeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ViewReportsActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
